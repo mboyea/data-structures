@@ -1,7 +1,7 @@
 #include <iostream>
 
 // Time Complexity: O(n^2)
-void BubbleSort(int* array, const int size) {
+void BubbleSortBackwards(int* array, const int size) {
 	int temp;
 	for (int i = 0; i < size - 1; i++) {
 		for (int j = 0; j < size - i - 1; j++) {
@@ -16,7 +16,7 @@ void BubbleSort(int* array, const int size) {
 
 int main() {
 	// Show title
-	std::cout << "BUBBLE SORT\n---\n";
+	std::cout << "BUBBLE SORT BACKWARDS\n---\n";
 
 	// Prepare numbers
 	const int NUMBERS_SIZE = 8;
@@ -30,7 +30,7 @@ int main() {
 	std::cout << "\n\n";
 
 	// Sort array
-	BubbleSort(numbers, NUMBERS_SIZE);
+	BubbleSortBackwards(numbers, NUMBERS_SIZE);
 
 	// Show numbers after sort
 	std::cout << "NUMBERS AFTER SORT: ";

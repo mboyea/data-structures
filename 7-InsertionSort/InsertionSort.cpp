@@ -1,22 +1,20 @@
 #include <iostream>
 
 // Time Complexity: O(n^2)
-void BubbleSort(int* array, const int size) {
+void InsertionSort(int* array, const int size) {
 	int temp;
-	for (int i = 0; i < size - 1; i++) {
-		for (int j = 0; j < size - i - 1; j++) {
-			if (array[j] > array[j + 1]) {
-				temp = array[j];
-				array[j] = array[j + 1];
-				array[j + 1] = temp;
-			}
+	for (int i = 1; i < size; i++) {
+		for (int j = i; j > 0 && array[j] < array[j-1]; j--) {
+			temp = array[j];
+			array[j] = array[j - 1];
+			array[j - 1] = temp;
 		}
 	}
 }
 
 int main() {
 	// Show title
-	std::cout << "BUBBLE SORT\n---\n";
+	std::cout << "INSERTION SORT\n---\n";
 
 	// Prepare numbers
 	const int NUMBERS_SIZE = 8;
@@ -30,7 +28,7 @@ int main() {
 	std::cout << "\n\n";
 
 	// Sort array
-	BubbleSort(numbers, NUMBERS_SIZE);
+	InsertionSort(numbers, NUMBERS_SIZE);
 
 	// Show numbers after sort
 	std::cout << "NUMBERS AFTER SORT: ";

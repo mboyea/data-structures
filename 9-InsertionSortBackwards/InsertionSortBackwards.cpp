@@ -1,20 +1,20 @@
 #include <iostream>
 
 // Time Complexity: O(n^2)
-void InsertionSort(int* array, const int size) {
+void InsertionSortBackwards(int* array, const int size) {
 	int temp;
-	for (int i = 1; i < size; i++) {
-		for (int j = i; j > 0 && array[j] < array[j-1]; j--) {
+	for (int i = size - 2; i >= 0; i--) {
+		for (int j = i; j < size - 1 && array[j] > array[j + 1]; j++) {
 			temp = array[j];
-			array[j] = array[j - 1];
-			array[j - 1] = temp;
+			array[j] = array[j + 1];
+			array[j + 1] = temp;
 		}
 	}
 }
 
 int main() {
 	// Show title
-	std::cout << "SELECTION SORT\n---\n";
+	std::cout << "INSERTION SORT BACKWARDS\n---\n";
 
 	// Prepare numbers
 	const int NUMBERS_SIZE = 8;
@@ -28,7 +28,7 @@ int main() {
 	std::cout << "\n\n";
 
 	// Sort array
-	InsertionSort(numbers, NUMBERS_SIZE);
+	InsertionSortBackwards(numbers, NUMBERS_SIZE);
 
 	// Show numbers after sort
 	std::cout << "NUMBERS AFTER SORT: ";
