@@ -3,28 +3,28 @@
 
 // Precondition: array is sorted from least to greatest
 // Time Complexity: O(log_2(n))
-int BinarySearchRecursive(const int* array, const int size, const int key, int low, int high) {
+int BinarySearchRecursive(const int* array, const int key, int low, int high) {
 	if (low > high) {
-		// key not found
+		// key not found in array
 		return -1;
 	}
 
 	int mid = (low + high) / 2;
 	if (array[mid] < key) {
-		// element is to the right
-		return BinarySearchRecursive(array, size, key, mid + 1, high);
+		// key index is greater than mid
+		return BinarySearchRecursive(array, key, mid + 1, high);
 	}	else if (array[mid] > key) {
-		// element is to the left
-		return BinarySearchRecursive(array, size, key, low, mid - 1);
+		// key index is less than mid
+		return BinarySearchRecursive(array, key, low, mid - 1);
 	}
-	// key found
+	// array[mid] equals key; key found
 	return mid;
 }
 
 // Precondition: array is sorted from least to greatest
 // Time Complexity: O(log_2(n))
 int BinarySearchRecursive(const int* array, const int size, const int key) {
-	return BinarySearchRecursive(array, size, key, 0, size-1);
+	return BinarySearchRecursive(array, key, 0, size-1);
 }
 
 int main() {

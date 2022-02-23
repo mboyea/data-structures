@@ -9,17 +9,17 @@ int BinarySearch(const int* array, const int size, const int key) {
 	while (low <= high) {
 		mid = (high + low) / 2;
 		if (array[mid] < key) {
-			// element is to the right
+			// key index is greater than mid
 			low = mid + 1;
 		} else if (array[mid] > key) {
-			// element is to the left
+			// key index is less than mid
 			high = mid - 1;
 		} else {
-			// key found
+			// array[mid] equals key; key found
 			return mid;
 		}
 	}
-	// key not found
+	// key not found in array
 	return -1;
 }
 
