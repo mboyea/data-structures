@@ -26,32 +26,25 @@ public:
 template <class T>
 class LinkedList {
 public:
-	Node<T>* head = nullptr;
-	Node<T>* tail = nullptr;
+	Node<T>* head;
+	Node<T>* tail;
 
+	LinkedList() : head(new Node<T>(0)), tail(head) {}
 	// insert node at the end of the list
 	void Append(Node<T>* node) {
-		// case: no elements are in list
-		if (head == nullptr) {
-			head = node;
-			tail = node;
-			return;
-		}
 		// insert node after tail
 		tail->next = node;
 		tail = node;
 	}
 	// insert node at the beginning of the list
 	void Prepend(Node<T>* node) {
-		// case: no elements are in list
-		if (head == nullptr) {
-			head = node;
-			tail = node;
-			return;
-		}
 		// insert node before head
-		node->next = head;
-		head = node;
+		node->next = head->next;
+		head->next = node;
+		// case: no elements are in list
+		if (head == tail) {
+			tail = node;
+		}
 	}
 	// insert node into the list after the target
 	// if no target is given, Prepend the node
@@ -72,20 +65,20 @@ public:
 		target->next = node;
 	}
 	// remove the node after the target from the list
-	// if no target is given, remove the head
+	// if no target is given, remove the first node with data
 	void RemoveAfter(Node<T>* target) {
 		Node<T>* successor;
 		// case: no target given & list isn't empty
-		if (target == nullptr && head != nullptr) {
-			successor = head->next;
-			head = successor;
+		if (target == nullptr && head->next != nullptr) {
+			successor = head->next->next;
+			head->next = successor;
 			// case: head is the last element
 			if (successor == nullptr) {
-				tail = nullptr;
+				tail = head;
 			}
 			return;
 		}
-		// case: a node follows target
+		// if target is given a node follows target
 		if (target->next != nullptr) {
 			successor = target->next->next;
 			target->next = successor;
@@ -99,10 +92,6 @@ public:
 	// return the address of the node that has a value equal to key
 	// if key is not found in the list, return nullptr
 	Node<T>* LinearSearch(T key) {
-		// case: list is empty
-		if (head == nullptr) {
-			return nullptr;
-		}
 		// for every node
 		for (Node<T>* target = head; target != nullptr; target = target->next) {
 				// return the node if its data matches key
@@ -115,11 +104,11 @@ public:
 	// print the list to os
 	friend std::ostream& operator<<(std::ostream& os, const LinkedList& list) {
 		// case: list is empty
-		if (list.head == nullptr) {
+		if (list.head->next == nullptr) {
 			return os;
 		}
 		// for every node except the tail
-		for (Node<T>* target = list.head; target->next != nullptr; target = target->next) {
+		for (Node<T>* target = list.head->next; target->next != nullptr; target = target->next) {
 				// output the node's data and a whitespace
 				os << target->data << ' ';
 		}
@@ -139,8 +128,8 @@ int main() {
 		std::cout << "0: quit\n";
 		std::cout << "1: append\n";
 		std::cout << "2: prepend\n";
-		std::cout << "3: insert\n";
-		std::cout << "4: remove\n";
+		std::cout << "3: insert after\n";
+		std::cout << "4: remove after\n";
 		std::cout << "\n";
 		std::cout << "Choice: ";
 

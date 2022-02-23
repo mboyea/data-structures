@@ -139,8 +139,8 @@ int main() {
 		std::cout << "0: quit\n";
 		std::cout << "1: append\n";
 		std::cout << "2: prepend\n";
-		std::cout << "3: insert\n";
-		std::cout << "4: remove\n";
+		std::cout << "3: insert after\n";
+		std::cout << "4: remove after\n";
 		std::cout << "\n";
 		std::cout << "Choice: ";
 
