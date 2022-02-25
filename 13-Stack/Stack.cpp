@@ -98,8 +98,8 @@ public:
 			if (successor == nullptr) {
 				tail = target;
 			}
-			return;
 		}
+		return;
 	}
 	// return the address of the node that has a value equal to key
 	// if key is not found in the list, return nullptr
@@ -147,13 +147,17 @@ public:
 	// return the data in the element
 	T Pop() {
 		// save the address of the head
-		Node<T>* node = this->head;
+		Node<T>* target = this->head;
+		// case: there is no head
+		if (target == nullptr) {
+			return (T)0;
+		}
 		// remove the head from the list
 		this->RemoveAfter(nullptr);
 		// save the node data
-		T data = node->data;
+		T data = target->data;
 		// delete the node
-		delete node;
+		delete target;
 		// return the node data
 		return data;
 	}
@@ -184,7 +188,7 @@ int main() {
 			std::getline(std::cin, input);
 			stack.Push(std::stoi(input));
 		} else if (input[0] == '2' || ((input[0] == 'p' || input[0] == 'P') && (input[1] == 'o' || input[1] == 'O'))) {
-			stack.Pop();
+			std::cout << "Removed " << stack.Pop() << "\n";
 		} else {
 			std::cout << "Input not recognized. Please try again.\n";
 		}
