@@ -7,7 +7,7 @@
  * operator[](index)
  * operator<<(os, list)
  * 
- * Date: 3/2/2022
+ * Date: 3/8/2022
  * Author: Matthew Boyea
  */
 
