@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 
 template <class T>
 struct Node {
@@ -25,6 +26,40 @@ public:
 
 template <class T>
 class LinkedList {
+private:
+	Node<T>* LinearSearch(T key) {
+		// for every node
+		for (Node<T>* target = head; target != nullptr; target = target->next) {
+			// return the node if its data matches key
+			if (key == target->data) return target;
+		}
+		// key not found
+		return nullptr;
+	}
+	void SelectionSort() {
+		// case: list has 0 or 1 elements
+		if (head == nullptr || head->next == nullptr) {
+			return;
+		}
+		T temp;
+		// i ranges from the first to second-to-last element
+		for (Node<T>* i = head; i->next != nullptr; i = i->next) {
+			// FIND SMALLEST NODE WITHIN [i->next, tail]
+			Node<T>* nodeSmallest = i;
+			// j ranges from i->next to the tail
+			for (Node<T>* j = i->next; j != nullptr; j = j->next) {
+				// if j is smaller than the current known smallest node
+				if (j->data < nodeSmallest->data) {
+					// set the smallest known node to j
+					nodeSmallest = j;
+				}
+			}
+			// SWAP THE SMALLEST NODE WITH i
+			temp = i->data;
+			i->data = nodeSmallest->data;
+			nodeSmallest->data = temp;
+		}
+	}
 public:
 	Node<T>* head = nullptr;
 	Node<T>* tail = nullptr;
@@ -96,21 +131,13 @@ public:
 			return;
 		}
 	}
+	void Sort() {
+		SelectionSort();
+	}
 	// return the address of the node that has a value equal to key
 	// if key is not found in the list, return nullptr
-	Node<T>* LinearSearch(T key) {
-		// case: list is empty
-		if (head == nullptr) {
-			return nullptr;
-		}
-		// for every node
-		for (Node<T>* target = head; target != nullptr; target = target->next) {
-				// return the node if its data matches key
-				if (key == target->data)
-					return target;
-		}
-		// key not found
-		return nullptr;
+	Node<T>* Search(T key) {
+		return LinearSearch(key);
 	}
 	// print the list to os
 	friend std::ostream& operator<<(std::ostream& os, const LinkedList& list) {
@@ -125,6 +152,40 @@ public:
 		}
 		// output the tail
 		return os << list.tail->data;
+	}
+	void PrintList() {
+		std::cout << *this;
+	}
+	void PrintListReversely() {
+		// NOTE: This is a quick and dirty solution.
+		// There is likely a much better algorithm.
+		std::string output = "";
+		std::stringstream os;
+		// case: list is empty
+		if (head == nullptr) {
+			return;
+		}
+		// for every node except the tail
+		for (Node<T>* target = head; target->next != nullptr; target = target->next) {
+				// output a whitespace and the node's data
+				os << ' ' << target->data;
+				output.insert(0, os.str());
+				os.str(std::string());
+				os.clear();
+		}
+		// output the tail
+		os << tail->data;
+		output.insert(0, os.str());
+		std::cout << output;
+	}
+	unsigned int GetLength() {
+		unsigned int sum = 0;
+		// for every node
+		for (Node<T>* target = head; target != nullptr; target = target->next) {
+			// increment sum
+			sum++;
+		}
+		return sum;
 	}
 };
 
@@ -141,6 +202,7 @@ int main() {
 		std::cout << "2: prepend\n";
 		std::cout << "3: insert after\n";
 		std::cout << "4: remove after\n";
+		std::cout << "5: sort\n";
 		std::cout << "\n";
 		std::cout << "Choice: ";
 
@@ -166,7 +228,7 @@ int main() {
 			Node<int>* node = new Node<int>(std::stoi(input));
 			std::cout << "Target data to place it after: ";
 			std::getline(std::cin, input);
-			Node<int>* target = list.LinearSearch(std::stoi(input));
+			Node<int>* target = list.Search(std::stoi(input));
 			if (target == nullptr) {
 				std::cout << "Target data not found; placing new data at the front of list.\n";
 			}
@@ -174,18 +236,21 @@ int main() {
 		} else if (input[0] == '4' || input[0] == 'r' || input[0] == 'R') {
 			std::cout << "Data before the target data to remove: ";
 			std::getline(std::cin, input);
-			Node<int>* target = list.LinearSearch(std::stoi(input));
+			Node<int>* target = list.Search(std::stoi(input));
 			if (target == nullptr) {
 				std::cout << "Target data not found; deleting data at the front of list.\n";
 			}
 			list.RemoveAfter(target);
-
+		} else if (input[0] == '5' || input[0] == 's' || input[0] == 'S') {
+			list.Sort();
 		} else {
 			std::cout << "Input not recognized. Please try again.\n";
 		}
 
 		// Print list
-		std::cout << "\nList: " << list << "\n";
+		std::cout << "\nList: ";//  << list << "\n"
+		list.PrintListReversely();
+		std::cout << "\n";
 		// Pause
 		system("pause");
 		std::cout << "\n";

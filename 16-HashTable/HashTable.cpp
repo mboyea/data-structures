@@ -44,8 +44,8 @@ public:
 		unsigned int bucket = Hash(data);
 		// for every bucket
 		for (unsigned int bucketsChecked = 0; bucketsChecked < bucketCount; bucketsChecked++) {
-			// if bucket is empty
-			if (array[bucket] < 0) {
+			// if bucket contains the data
+			if (array[bucket] == data) {
 				// return the index
 				return bucket;
 			}
