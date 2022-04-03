@@ -45,6 +45,28 @@ protected:
 	Node* root;
 public:
 	BST() : root(nullptr) {}
+	Node* Search(T data) const {
+		// search for data from the root
+		Node* target = root;
+		while (true) {
+			// if target == nullptr, data not found
+			if (target == nullptr) {
+				return nullptr;
+			}
+			// if data == target's data, return target
+			if (data == target->data) {
+				return target;
+			}
+			// if data < target's data, search left
+			if (data < target->data) {
+				target = target->left;
+				continue;
+			}
+			// data > target's data; search right
+			target = target->right;
+			continue;
+		}
+	}
 	Node* Insert(T data) {
 		// case: no root in tree
 		if (root == nullptr) {
@@ -76,6 +98,13 @@ public:
 				// continue searching on the right of target
 				target = target->right;
 			}
+		}
+	}
+	void Remove(T data) {
+		Node parent = nullptr;
+		Node target = root;
+		while (target != nullptr) {
+			return;
 		}
 	}
 	friend std::ostream& operator<<(std::ostream& os, const BST& tree) {
