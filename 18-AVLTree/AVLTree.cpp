@@ -30,14 +30,25 @@ public:
 			: data(data), left(left), right(right), parent(parent) {}
 		void UpdateHeight() {
 			int leftHeight = -1;
+			int rightHeight = -1;
 			if (left != nullptr) {
 				leftHeight = left->height;
 			}
-			int rightHeight = -1;
 			if (right != nullptr) {
 				rightHeight = right->height;
 			}
 			height = std::max(leftHeight, rightHeight) + 1;
+		}
+		int GetBalanceFactor() {
+			int leftHeight = -1;
+			int rightHeight = -1;
+			if (left != nullptr) {
+				leftHeight = left->height;
+			}
+			if (right != nullptr) {
+				rightHeight = right->height;
+			}
+			height = leftHeight - rightHeight;
 		}
 		void SetLeftChild(Node* newChild) {
 			left = newChild;
@@ -49,8 +60,14 @@ public:
 		}
 		int ReplaceChild(Node* currentChild, Node* newChild) {
 			if (left == currentChild) {
-				
+				SetLeftChild(newChild);
+				return 1
 			}
+			if (right == currentChild) {
+				SetRightChild(newChild);
+				return -1;
+			}
+			return 0;
 		}
 		friend std::ostream& operator<<(std::ostream& os, const Node& node) {
 			// if left has node, print it first
@@ -92,38 +109,91 @@ public:
 			continue;
 		}
 	}
-	Node* Insert(T data) {
+	void RotateLeft(Node* node) {
+		Node* rightLeftChild = node->right->left;
+		if (node->parent != nullptr) {
+			node->parent->ReplaceChild(node, node->right)
+		} else {
+			root = node->right;
+			root->parent = nullptr;
+		}
+		node->right->SetLeftChild(node);
+		node->SetRightChild(rightLeftChild);
+	}
+	void RotateRight(Node* node) {
+		Node* leftRightChild = node->left->right;
+		if (node->parent != nullptr) {
+			node->parent->ReplaceChild(node, node->left);
+		} else {
+			root = node->left;
+			root->parent = nullptr;
+		}
+		node->left->SetRightChild(node);
+		node->SetLeftChild(leftRightChild);
+	}
+	void Rebalance(Node* node) {
+		node->UpdateHeight();
+		int balanceFactor = node->GetBalanceFactor();
+		// case: node has more right children
+		if (balanceFactor == -2) {
+			// case: node's right child has more left children
+			if (node->right->GetBalanceFactor() == 1) {
+				RotateRight(node->right);
+			}
+			RotateLeft(node);
+		}
+		// case: node has more left children
+		else if (balanceFactor == 2) {
+			// case: node's left child has more right children
+			if (node->left->GetBalanceFactor() == -1) {
+				RotateLeft(node);
+			}
+			RotateRight(node);
+		}
+	}
+	Node* Insert(Node* newNode) {
 		// case: no root in tree
 		if (root == nullptr) {
 			// put data into the root
-			root = new Node(data);
+			root = newNode;
 			return root;
 		}
 		// search for empty location from the root
 		Node* target = root;
 		while (true) {
-			// if data < target's data, it is placed to the left
-			if (data < target->data) {
+			// if newNode's data < target's data, it is placed in target->left
+			if (newNode->data < target->data) {
+				// if target->left is empty
 				if (target->left == nullptr) {
-					// put data on the left of target
-					target->left = new Node(data);
-					return target->left;
+					// put data in target->left
+					target->left = newNode;
+					newNode->parent = target;
+					break;
 				}
-				// continue searching on the left of target
-				target = target->left;
-				continue;
+				// otherwise continue searching on the left of target
+				else target = target->left;
 			}
-			// otherwise it is placed to the right
+			// otherwise newNode is placed in target->right
 			else {
+				// if target->right is empty
 				if (target->right == nullptr) {
-					// put data on the right of target
-					target->right = new Node(data);
-					return target->right;
+					// put data in target->right
+					target->right = newNode;
+					newNode->parent = target;
+					break;
 				}
-				// continue searching on the right of target
-				target = target->right;
+				// otherwise continue searching on the right of target
+				else target = target->right;
 			}
 		}
+		while (target != nullptr) {
+			Rebalance(target);
+			target = target->parent;
+		}
+		return newNode;
+	}
+	Node* Insert(T data) {
+		return Insert(new Node(data));
 	}
 	void Remove(T data) {
 		Node parent = nullptr;
@@ -132,7 +202,7 @@ public:
 			return;
 		}
 	}
-	friend std::ostream& operator<<(std::ostream& os, const BST& tree) {
+	friend std::ostream& operator<<(std::ostream& os, const AVLT& tree) {
 		// case: no root in tree
 		if (tree.root == nullptr) {
 			return os;
