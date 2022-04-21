@@ -2,17 +2,20 @@
  * Create an AVL Tree with the following public methods.
  * DepthFirstSearch(Data data, Node* startingNode) const
  * BreadthFirstSearch(Data data, Node* startingNode) const
+ * DijkstraShortestPath(Node* startingNode) const
+ * TropologicalSort()
  * Insert(Data data)
  * Remove(Node* node)
  * operator<<(std::ostream& os, const BST& container)
  * 
- * Date: 4/10/2022
+ * Date: 4/22/2022
  * Author: Matthew Boyea
  */
 
 #include <iostream>
 #include <string>
 #include <list>
+#include <forward_list>
 #include <map>
 #include <vector>
 
@@ -21,36 +24,51 @@ class Graph {
 public:
 	struct Node {
 		T data;
-		std::list<Node*> adjacentNodes;
+		std::forward_list<Node*> adjacentNodes;
 		Node(T data)
 			: data(data) {}
 		friend bool operator<(const Node& lhs, const Node& rhs) {
 			return lhs.data < rhs.data;
 		}
 		friend std::ostream& operator<<(std::ostream& os, const Node& node) {
-			// TODO: implement print this and adjacent nodes to os
-			
+			// print this node's data and the opening bracket
+			os << node->data << '[';
+			// iterate from the beginning of the adjacentNodes
+			auto it = node->adjacentNodes.begin();
+			// if adjacentNodes has an element
+			if (it != node->adjacentNodes.end()) {
+				// print the first adjacent node's data
+				os << *it->data;
+				it++;
+				// while adjacentNodes has another element
+				while (it != node->adjacentNodes.end()) {
+					// print a space, followed by the next adjacent node's data
+					os << ' ' << *it->data;
+					it++;
+				}
+			}
+			// print the closing bracket
+			os << ']';
 			return os;
 		}
 	};
 private:
-	Node* head;
+	std::forward_list<Node*> nodes;
 public:
-	Graph()
-		: head(nullptr) {}
+	Graph() {}
 	Node* DepthFirstSearch(T data, Node* startingNode) const {
 		// TODO: implement depth search from startingNode
 		return nullptr;
 	}
 	Node* DepthFirstSearch(T data) const {
-		return DepthFirstSearch(data, head);
+		return DepthFirstSearch(data, nodes.front());
 	}
 	Node* BreadthFirstSearch(T data, Node* startingNode) const {
 		// TODO: implement breadth search from startingNode
 		return nullptr;
 	}
 	Node* BreadthFirstSearch(T data) const {
-		return BreadthFirstSearch(data, head);
+		return BreadthFirstSearch(data, nodes.front());
 	}
 	Node* Insert(T data) {
 		// TODO: implement insert function
@@ -60,13 +78,26 @@ public:
 		// TODO: implement remove function
 		return -1;
 	}
-	std::ostream& PrintAdjacencyList(std::ostream& os) {
-		// TODO: implement print adjacency list
-
-		return os;
-	}
 	friend std::ostream& operator<<(std::ostream& os, const Graph& graph) {
-		return os << graph.head;
+		// iterate from the beginning of nodes
+		auto it = graph.nodes.begin();
+		// if the graph has a node
+		if (it != graph.nodes.end()) {
+			// print the first node
+			os << *it;
+			it++;
+			// while the graph has another node
+			while (it != graph.nodes.end()) {
+				// print a newline, followed by the next node
+				os << std::endl << *it;
+				it++;
+			}
+		}
+		// otherwise the graph is empty
+		else {
+			os << "empty";
+		}
+		return os;
 	}
 };
 
