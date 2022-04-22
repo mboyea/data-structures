@@ -1,9 +1,9 @@
 /* ASSIGNMENT:
  * Create an AVL Tree with the following public methods.
- * DepthFirstSearch(Data data, Node* startingNode) const
  * BreadthFirstSearch(Data data, Node* startingNode) const
+ * DepthFirstSearch(Data data, Node* startingNode) const
  * DijkstraShortestPath(Node* startingNode) const
- * TropologicalSort()
+ * TopologicalSort()
  * Insert(Data data)
  * Remove(Node* node)
  * operator<<(std::ostream& os, const BST& container)
@@ -14,10 +14,11 @@
 
 #include <iostream>
 #include <string>
-#include <list>
+// singly linked list for adjacency list
 #include <forward_list>
-#include <map>
-#include <vector>
+// queue and set for search algorithms
+#include <queue>
+#include <set>
 
 template<typename T>
 class Graph {
@@ -27,23 +28,25 @@ public:
 		std::forward_list<Node*> adjacentNodes;
 		Node(T data)
 			: data(data) {}
+		// TODO: label function
 		friend bool operator<(const Node& lhs, const Node& rhs) {
 			return lhs.data < rhs.data;
 		}
+		// TODO: label function
 		friend std::ostream& operator<<(std::ostream& os, const Node& node) {
 			// print this node's data and the opening bracket
-			os << node->data << '[';
+			os << node.data << '[';
 			// iterate from the beginning of the adjacentNodes
-			auto it = node->adjacentNodes.begin();
+			auto it = node.adjacentNodes.begin();
 			// if adjacentNodes has an element
-			if (it != node->adjacentNodes.end()) {
+			if (it != node.adjacentNodes.end()) {
 				// print the first adjacent node's data
-				os << *it->data;
+				os << (*it)->data;
 				it++;
 				// while adjacentNodes has another element
-				while (it != node->adjacentNodes.end()) {
+				while (it != node.adjacentNodes.end()) {
 					// print a space, followed by the next adjacent node's data
-					os << ' ' << *it->data;
+					os << ' ' << (*it)->data;
 					it++;
 				}
 			}
@@ -53,72 +56,145 @@ public:
 		}
 	};
 private:
-	std::forward_list<Node*> nodes;
+	Node* root;
+	std::forward_list<Node*> adjacencyList;
 public:
-	Graph() {}
-	Node* DepthFirstSearch(T data, Node* startingNode) const {
-		// TODO: implement depth search from startingNode
-		return nullptr;
+	Graph() : root(nullptr) {
+		// insert a dummy node
+		adjacencyList.push_front(nullptr);
 	}
-	Node* DepthFirstSearch(T data) const {
-		return DepthFirstSearch(data, nodes.front());
-	}
+	// TODO: label function
 	Node* BreadthFirstSearch(T data, Node* startingNode) const {
-		// TODO: implement breadth search from startingNode
-		return nullptr;
-	}
-	Node* BreadthFirstSearch(T data) const {
-		return BreadthFirstSearch(data, nodes.front());
-	}
-	Node* Insert(T data) {
-		// TODO: implement insert function
-		return nullptr;
-	}
-	int Remove(Node* node) {
-		// TODO: implement remove function
-		return -1;
-	}
-	friend std::ostream& operator<<(std::ostream& os, const Graph& graph) {
-		// iterate from the beginning of nodes
-		auto it = graph.nodes.begin();
-		// if the graph has a node
-		if (it != graph.nodes.end()) {
-			// print the first node
-			os << *it;
-			it++;
-			// while the graph has another node
-			while (it != graph.nodes.end()) {
-				// print a newline, followed by the next node
-				os << std::endl << *it;
+		// case: no starting node given
+		if (startingNode == nullptr) {
+			return nullptr;
+		}
+		// insert startingNode into searchQueue
+		std::queue<Node*> searchQueue;
+		searchQueue.push(startingNode);
+		// insert startingNode into discoveredNodes
+		std::set<Node*> discoveredNodes;
+		discoveredNodes.insert(startingNode);
+		// while searchQueue has remaining nodes
+		Node* targetNode;
+		while (!searchQueue.empty()) {
+			// get the next targetNode
+			targetNode = searchQueue.front();
+			searchQueue.pop();
+			// if targetNode has data which is being searched for
+			if (targetNode->data == data) {
+				// return the targetNode
+				return targetNode;
+			}
+			// iterate over every adjacent node of targetNode
+			auto it = targetNode->adjacentNodes.begin(); 
+			while (it != targetNode->adjacentNodes.end()) {
+				// if the adjacent node is not in discoveredNodes
+				if (discoveredNodes.find(*it) == discoveredNodes.end()) {
+					// insert the adjacent node into searchQueue & discoveredNodes
+					searchQueue.push(*it);
+					discoveredNodes.insert(*it);
+				}
 				it++;
 			}
 		}
-		// otherwise the graph is empty
-		else {
-			os << "empty";
+		return nullptr;
+	}
+	// TODO: label function
+	Node* BreadthFirstSearch(T data) const {
+		return BreadthFirstSearch(data, root);
+	}
+	// TODO: label function
+	Node* DepthFirstSearch(T data, Node* startingNode) const {
+		// case: no starting node given
+		if (startingNode == nullptr) {
+			return nullptr;
+		}
+		// TODO: implement depth search from startingNode
+		return nullptr;
+	}
+	// TODO: label function
+	Node* DepthFirstSearch(T data) const {
+		return DepthFirstSearch(data, adjacencyList.front());
+	}
+	// TODO: label function
+	Node* Insert(T data, Node* adjacentNode) {
+		Node* newNode = new Node(data);
+		// if adjacentNode isn't given
+		if (adjacentNode == nullptr) {
+			// if root is empty, insert newNode into root
+			if (root == nullptr) {
+				root = newNode;
+			}
+			// otherwise node is in root; return nothing
+			else {
+				delete newNode;
+				return nullptr;
+			}
+		}
+		// otherwise set newNode as adjacent to adjacentNode
+		else adjacentNode->adjacentNodes.push_front(newNode);
+		// insert newNode into adjacencyList
+		adjacencyList.push_front(newNode);
+		return newNode;
+	}
+	// TODO: label function
+	Node* Insert(T data) {
+		return Insert(data, root);
+	}
+	// TODO: label function
+	char Remove(Node* node) {
+		// case: no node given
+		if (node == nullptr) {
+			return -1;
+		}
+		// iterate over every element in adjacencyList
+		for (auto it = adjacencyList.before_begin(); *std::next(it) != nullptr; it++) {
+			// delete every occurance of the removed node in the element
+			(*std::next(it))->adjacentNodes.remove(node);
+		}
+		return 0;
+	}
+	// TODO: label function
+	friend std::ostream& operator<<(std::ostream& os, const Graph& graph) {
+		std::cout << graph.root << '\n';
+		// iterate from the beginning of adjacencyList
+		auto it = graph.adjacencyList.begin();
+		// if the graph has a node
+		if (*it != nullptr) {
+			// print the first node
+			os << **it;
+			it++;
+			// while the graph has another node
+			while (*it != nullptr) {
+				// print a newline, followed by the next node
+				os << std::endl << **it;
+				it++;
+			}
 		}
 		return os;
 	}
 };
 
 int main() {
-	// Declare container
+	// declare container
 	Graph<int> container;
-
+	// print title
+	std::cout << "GRAPH\n";
+	std::cout << "---\n";
 	while(true) {
-		// Print container
-		std::cout << "Container: " << container << "\n";
-		// Print menu
-		std::cout << "BINARY SEARCH TREE\n";
-		std::cout << "---\n";
-		std::cout << "0: quit\n";
-		std::cout << "1: insert\n";
-		std::cout << "2: remove\n";
-		std::cout << "3: depth search\n";
-		std::cout << "4: breadth search\n";
-		std::cout << "\n";
-		std::cout << "Choice: ";
-
+		// print container
+		std::cout << "CONTAINER:\n";
+		std::cout << container << "\n";
+		// print commands
+		std::cout << "COMMANDS:\n";
+		std::cout << " 0: quit\n";
+		std::cout << " 1: insert\n";
+		std::cout << " 2: remove\n";
+		std::cout << " 3: breadth search\n";
+		std::cout << " 4: depth search\n";
+		// print input request
+		std::cout << "insert command: ";
 		// get input
 		std::string input;
 		std::getline(std::cin, input);
@@ -129,44 +205,44 @@ int main() {
 		// parse input
 		if (input[0] == '0' || input[0] == 'Q' || input[0] == 'q') {
 			// QUIT
-			std::cout << "Quitting...\n";
+			std::cout << "quitting...\n";
 			system("pause");
 			break;
 		} else if (input[0] == '1' || input[0] == 'I' || input[0] == 'i') {
 			// INSERT DATA
-			std::cout << "Data(int): ";
+			std::cout << "insert data(int): ";
 			std::getline(std::cin, input);
-			container.Insert(std::stoi(input));
-			std::cout << "Data inserted.\n";
+			std::cout << "data inserted at memory address " << container.Insert(std::stoi(input)) << "\n";
 		} else if (input[0] == '2' || input[0] == 'R' || input[0] == 'r') {
 			// REMOVE DATA
-			std::cout << "Data(int): ";
+			std::cout << "insert data(int): ";
 			std::getline(std::cin, input);
 			if (container.Remove(container.BreadthFirstSearch(std::stoi(input))) < 0)
-				std::cout << "Data not found; the data could not be removed.\n";
+				std::cout << "data not found; the data could not be removed\n";
 			else
-				std::cout << "Data removed.\n";
-		} else if (input[0] == '3' || input[0] == 'D' || input[0] == 'd') {
-			// DEPTH SEARCH FOR DATA
-			std::cout << "Data(int): ";
-			std::getline(std::cin, input);
-			Graph<int>::Node* node = container.DepthFirstSearch(std::stoi(input));
-			if (node == nullptr)
-				std::cout << "Data not found.\n";
-			else
-				std::cout << "Data found at memory address " << node << ".\n";
-		} else if (input[0] == '4' || input[0] == 'B' || input[0] == 'b') {
+				std::cout << "data removed\n";
+		} else if (input[0] == '3' || input[0] == 'B' || input[0] == 'b') {
 			// BREADTH SEARCH FOR DATA
-			std::cout << "Data(int): ";
+			std::cout << "insert data(int): ";
 			std::getline(std::cin, input);
 			Graph<int>::Node* node = container.BreadthFirstSearch(std::stoi(input));
 			if (node == nullptr)
-				std::cout << "Data not found.\n";
+				std::cout << "data not found\n";
 			else
-				std::cout << "Data found at memory address " << node << ".\n";
+				std::cout << "data found at memory address " << node << "\n";
+		} else if (input[0] == '4' || input[0] == 'D' || input[0] == 'd') {
+			// DEPTH SEARCH FOR DATA
+			std::cout << "insert data(int): ";
+			std::getline(std::cin, input);
+			Graph<int>::Node* node = container.DepthFirstSearch(std::stoi(input));
+			if (node == nullptr)
+				std::cout << "data not found\n";
+			else
+				std::cout << "data found at memory address " << node << "\n";
 		} else {
-			std::cout << "Input not recognized. Please try again.\n";
+			std::cout << "input not recognized; please try again\n";
 		}
+		// print spacer
 		std::cout << "\n";
 	}
 	// exit program
