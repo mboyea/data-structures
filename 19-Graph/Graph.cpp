@@ -2,10 +2,12 @@
  * Create an AVL Tree with the following public methods.
  * BreadthFirstSearch(Data data, Node* startingNode) const
  * DepthFirstSearch(Data data, Node* startingNode) const
- * DijkstraShortestPath(Node* startingNode) const
- * TopologicalSort()
+ * DijkstraShortestPath(Data data, Node* startingNode) const
+ * BellmanFordShortestPath(Data data, Node* startingNode) const
+ * BellmanFordMooreShortestPath(Data data, Node* startingNode) const
  * Insert(Data data)
  * Remove(Node* node)
+ * TopologicalSort()
  * operator<<(std::ostream& os, const BST& container)
  * 
  * Date: 4/22/2022
@@ -16,7 +18,7 @@
 #include <string>
 // singly linked list for adjacency list
 #include <forward_list>
-// queue and set for search algorithms
+// queue and set for search/path/sort algorithms
 #include <queue>
 #include <set>
 
@@ -115,7 +117,20 @@ public:
 	}
 	// TODO: label function
 	Node* DepthFirstSearch(T data) const {
-		return DepthFirstSearch(data, adjacencyList.front());
+		return DepthFirstSearch(data, root);
+	}
+	// TODO: label function
+	std::queue<Node*> DijkstraShortestPath(T data, Node* startingNode) const {
+		// case: no starting node given
+		if (startingNode == nullptr) {
+			return nullptr;
+		}
+		// TODO: dijkstra's shortest path from startingNode
+		return nullptr;
+	}
+	// TODO: label function
+	std::queue<Node*> DijkstraShortestPath(T data) const {
+		return DijkstraShortestPath(data, root);
 	}
 	// TODO: label function
 	Node* Insert(T data, Node* adjacentNode) {
@@ -191,10 +206,12 @@ int main() {
 		std::cout << " 0: quit\n";
 		std::cout << " 1: insert\n";
 		std::cout << " 2: remove\n";
-		std::cout << " 3: breadth search\n";
-		std::cout << " 4: depth search\n";
+		std::cout << " 3: depth search\n";
+		std::cout << " 4: breadth search\n";
+		std::cout << " 5: dijkstra's shortest path\n";
+		std::cout << " 6: bellman-ford shortest path\n";
 		// print input request
-		std::cout << "insert command: ";
+		std::cout << "Insert command: ";
 		// get input
 		std::string input;
 		std::getline(std::cin, input);
@@ -205,42 +222,56 @@ int main() {
 		// parse input
 		if (input[0] == '0' || input[0] == 'Q' || input[0] == 'q') {
 			// QUIT
-			std::cout << "quitting...\n";
+			std::cout << "Quitting...\n";
 			system("pause");
 			break;
 		} else if (input[0] == '1' || input[0] == 'I' || input[0] == 'i') {
 			// INSERT DATA
-			std::cout << "insert data(int): ";
+			std::cout << "Insert data(int): ";
 			std::getline(std::cin, input);
-			std::cout << "data inserted at memory address " << container.Insert(std::stoi(input)) << "\n";
+			std::cout << "Data inserted at memory address " << container.Insert(std::stoi(input)) << "\n";
 		} else if (input[0] == '2' || input[0] == 'R' || input[0] == 'r') {
 			// REMOVE DATA
-			std::cout << "insert data(int): ";
+			std::cout << "Insert data(int): ";
 			std::getline(std::cin, input);
 			if (container.Remove(container.BreadthFirstSearch(std::stoi(input))) < 0)
-				std::cout << "data not found; the data could not be removed\n";
+				std::cout << "Data not found; the data could not be removed\n";
 			else
-				std::cout << "data removed\n";
-		} else if (input[0] == '3' || input[0] == 'B' || input[0] == 'b') {
-			// BREADTH SEARCH FOR DATA
-			std::cout << "insert data(int): ";
-			std::getline(std::cin, input);
-			Graph<int>::Node* node = container.BreadthFirstSearch(std::stoi(input));
-			if (node == nullptr)
-				std::cout << "data not found\n";
-			else
-				std::cout << "data found at memory address " << node << "\n";
-		} else if (input[0] == '4' || input[0] == 'D' || input[0] == 'd') {
+				std::cout << "Data removed\n";
+		} else if (input[0] == '3' || input[0] == 'D' || input[0] == 'd') {
 			// DEPTH SEARCH FOR DATA
-			std::cout << "insert data(int): ";
+			std::cout << "Insert data(int): ";
 			std::getline(std::cin, input);
 			Graph<int>::Node* node = container.DepthFirstSearch(std::stoi(input));
 			if (node == nullptr)
-				std::cout << "data not found\n";
+				std::cout << "Data not found\n";
 			else
-				std::cout << "data found at memory address " << node << "\n";
+				std::cout << "Data found at memory address " << node << "\n";
+		} else if (input[0] == '4' || input[0] == 'B' || input[0] == 'b') {
+			// BREADTH SEARCH FOR DATA
+			std::cout << "Insert data(int): ";
+			std::getline(std::cin, input);
+			Graph<int>::Node* node = container.BreadthFirstSearch(std::stoi(input));
+			if (node == nullptr)
+				std::cout << "Data not found\n";
+			else
+				std::cout << "Data found at memory address " << node << "\n";
+		} else if (input[0] == '5' || input[0] == 'D' || input[0] == 'd') {
+			// DIJKSTRA'S SHORTEST PATH
+			std::cout << "Insert data(int): ";
+			std::getline(std::cin, input);
+			std::queue<Graph<int>::Node*> path = container.DijkstraShortestPath(std::stoi(input));
+			if (path.empty())
+				std::cout << "Data not found\n";
+			else {
+				std::cout << "Path found:\n";
+				while (!path.empty()) {
+					std::cout << path.front() << ':' << path.front()->data << '\n';
+					path.pop();
+				}
+			}
 		} else {
-			std::cout << "input not recognized; please try again\n";
+			std::cout << "Input not recognized. Please try again.\n";
 		}
 		// print spacer
 		std::cout << "\n";
